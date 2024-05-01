@@ -8,6 +8,7 @@ import pep8 as pycodestyle
 import time
 import unittest
 from unittest import mock
+import pytz
 BaseModel = models.base_model.BaseModel
 module_doc = models.base_model.__doc__
 
@@ -146,7 +147,7 @@ class TestBaseModel(unittest.TestCase):
     @mock.patch('models.storage')
     def test_save(self, mock_storage):
         """Test that save method updates `updated_at` and calls
-        `storage.save`"""
+       `storage.save`"""
         inst = BaseModel()
         old_created_at = inst.created_at
         old_updated_at = inst.updated_at
@@ -157,3 +158,5 @@ class TestBaseModel(unittest.TestCase):
         self.assertEqual(old_created_at, new_created_at)
         self.assertTrue(mock_storage.new.called)
         self.assertTrue(mock_storage.save.called)
+        inst.updated_at = inst.updated_at.astimezone(pytz.utc)
+        self.assertEqual(inst.updated_at, new_updated_at)
